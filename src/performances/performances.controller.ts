@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Patch,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PerformancesService } from './performances.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -16,56 +17,59 @@ import { UpdatePerformanceDto } from './dto/update-performance.dto';
 export class PerformancesController {
   constructor(private readonly performancesService: PerformancesService) {}
 
+  // 공연 목록 조회
   @Get()
-  @ApiOperation({ summary: '공연 전체 목록 조회' })
-  @ApiResponse({
-    status: 200,
-    description: '공연 목록 조회 성공',
-  })
   getPerformances() {
     return this.performancesService.getAllPerformances();
   }
 
+  // 공연 상세 조회
   @Get(':id')
-  @ApiOperation({ summary: '공연 상세 정보 조회' })
-  @ApiResponse({
-    status: 200,
-    description: '공연 상세 정보 조회 성공',
-  })
-  @ApiResponse({
-    status: 404,
-    description: '공연 정보를 찾을 수 없음',
-  })
-  getPerformance(@Param('id') id: string) {
-    return this.performancesService.getPerformanceById(+id);
+  getPerformance(@Param('id', ParseIntPipe) id: number) {
+    return this.performancesService.getPerformanceById(id);
   }
 
+  // 공연 등록
   @Post()
-  @ApiOperation({ summary: '공연 등록' })
   postPerformances(@Body() body: CreatePerformanceDto) {
     return this.performancesService.createPerformance(body);
   }
 
+  // 공연 수정
   @Patch(':id')
-  @ApiOperation({ summary: '공연 정보 수정' })
   patchPerformance(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdatePerformanceDto,
   ) {
-    return this.performancesService.updatePerformance(+id, body);
+    return this.performancesService.updatePerformance(id, body);
   }
 
+  // 공연 삭제
   @Delete(':id')
-  @ApiOperation({ summary: '공연 삭제' })
-  @ApiResponse({
-    status: 200,
-    description: '공연 정보 삭제 성공',
-  })
-  @ApiResponse({
-    status: 404,
-    description: '공연 정보를 찾을 수 없음',
-  })
-  deletePerformance(@Param('id') id: string) {
-    return this.performancesService.deletePerformance(+id);
+  deletePerformance(@Param('id', ParseIntPipe) id: number) {
+    return this.performancesService.deletePerformance(id);
   }
+
+  // 좌석 임시 예약 -> 좌석 임시 차감
+  @Post(':id/reserve-seats')
+  postReserveSeats(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('seatCount') seatCount: number,
+  ) {
+    console.log(typeof seatCount);
+
+    return this.performancesService.reserveSeats(id, seatCount);
+  }
+
+  // 예약 확정
+  @Patch(':id/confirm-reservation')
+  patchConfirmReservation(@Param('id', ParseIntPipe) id: number) {}
+
+  // 예약 해제
+  @Patch(':id/release-reservation')
+  patchReleaseReservation(@Param('id', ParseIntPipe) id: number) {}
+
+  // 환불
+  @Post(':id/refund-seats')
+  postRefundSeats(@Param('id', ParseIntPipe) id: number) {}
 }
