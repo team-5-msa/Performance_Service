@@ -156,7 +156,8 @@ export class PerformancesService {
         title: performance.title,
         price: performance.price,
         availableSeats: performance.availableSeats, // 현재 남은 재고
-        message: '좌석 임시 예약이 완료되었습니다.',
+        status: reservation.status,
+        message: '임시 예약이 완료되었습니다.',
       };
     });
   }
@@ -166,7 +167,7 @@ export class PerformancesService {
     return await this.dataSource.transaction(async (manager) => {
       const reservation = await manager.findOne(ReservationModel, {
         where: { id: reservationId, performanceId },
-        relations: ['performance'], // 🔗 performance 관계 로드
+        relations: ['performance'],
       });
 
       if (!reservation) {
@@ -205,6 +206,7 @@ export class PerformancesService {
         title: reservation.performance.title,
         price: reservation.performance.price,
         availableSeats: reservation.performance.availableSeats,
+        status: reservation.status,
         message: '예약이 확정되었습니다.',
       };
     });
@@ -260,7 +262,8 @@ export class PerformancesService {
         title: performance.title,
         price: performance.price,
         availableSeats: performance.availableSeats,
-        message: '예약이 해제되었습니다.',
+        status: reservation.status,
+        message: '예약이 취소되었습니다.',
       };
     });
   }
@@ -304,7 +307,8 @@ export class PerformancesService {
         performanceId: performance.id,
         refundedSeats: reservation.seatCount,
         availableSeats: performance.availableSeats,
-        message: '예약이 환불되었습니다.',
+        status: reservation.status,
+        message: '예약이 취소되었습니다.',
       };
     });
   }
