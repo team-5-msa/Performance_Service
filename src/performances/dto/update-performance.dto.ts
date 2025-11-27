@@ -38,5 +38,10 @@ export class UpdatePerformanceDto extends PartialType(CreatePerformanceDto) {
   @IsNumber()
   @IsPositive()
   @IsOptional()
-  reservedSeats?: number;
+  totalSeats?: number;
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  availableSeats?: number;
 }

@@ -24,9 +24,9 @@ export class PerformancesController {
   }
 
   // 공연 상세 조회
-  @Get(':id')
-  getPerformance(@Param('id', ParseIntPipe) id: number) {
-    return this.performancesService.getPerformanceById(id);
+  @Get(':performanceId')
+  getPerformance(@Param('performanceId', ParseIntPipe) performanceId: number) {
+    return this.performancesService.getPerformanceById(performanceId);
   }
 
   // 공연 등록
@@ -36,40 +36,64 @@ export class PerformancesController {
   }
 
   // 공연 수정
-  @Patch(':id')
+  @Patch(':performanceId')
   patchPerformance(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('performanceId', ParseIntPipe) performanceId: number,
     @Body() body: UpdatePerformanceDto,
   ) {
-    return this.performancesService.updatePerformance(id, body);
+    return this.performancesService.updatePerformance(performanceId, body);
   }
 
   // 공연 삭제
-  @Delete(':id')
-  deletePerformance(@Param('id', ParseIntPipe) id: number) {
-    return this.performancesService.deletePerformance(id);
+  @Delete(':performanceId')
+  deletePerformance(
+    @Param('performanceId', ParseIntPipe) performanceId: number,
+  ) {
+    return this.performancesService.deletePerformance(performanceId);
   }
 
-  // 좌석 임시 예약 -> 좌석 임시 차감
-  @Post(':id/reserve-seats')
-  postReserveSeats(
-    @Param('id', ParseIntPipe) id: number,
+  // 좌석 임시 예약 → 좌석 임시 차감
+  @Post(':performanceId/reservations')
+  postReservation(
+    @Param('performanceId', ParseIntPipe) performanceId: number,
     @Body('seatCount') seatCount: number,
   ) {
-    console.log(typeof seatCount);
-
-    return this.performancesService.reserveSeats(id, seatCount);
+    return this.performancesService.reservation(performanceId, seatCount);
   }
 
   // 예약 확정
-  @Patch(':id/confirm-reservation')
-  patchConfirmReservation(@Param('id', ParseIntPipe) id: number) {}
+  @Patch(':performanceId/reservations/:reservationId/confirm')
+  patchConfirmReservation(
+    @Param('performanceId', ParseIntPipe) performanceId: number,
+    @Param('reservationId', ParseIntPipe) reservationId: number,
+  ) {
+    return this.performancesService.confirmReservation(
+      performanceId,
+      reservationId,
+    );
+  }
 
-  // 예약 해제
-  @Patch(':id/release-reservation')
-  patchReleaseReservation(@Param('id', ParseIntPipe) id: number) {}
+  // 예약 취소 (결제 전 취소)
+  @Patch(':performanceId/reservations/:reservationId/cancel')
+  patchCancelReservation(
+    @Param('performanceId', ParseIntPipe) performanceId: number,
+    @Param('reservationId', ParseIntPipe) reservationId: number,
+  ) {
+    return this.performancesService.cancelReservation(
+      performanceId,
+      reservationId,
+    );
+  }
 
-  // 환불
-  @Post(':id/refund-seats')
-  postRefundSeats(@Param('id', ParseIntPipe) id: number) {}
+  // 환불 (결제 후 취소)
+  @Patch(':performanceId/reservations/:reservationId/refund')
+  patchRefundReservation(
+    @Param('performanceId', ParseIntPipe) performanceId: number,
+    @Param('reservationId', ParseIntPipe) reservationId: number,
+  ) {
+    return this.performancesService.refundReservation(
+      performanceId,
+      reservationId,
+    );
+  }
 }
