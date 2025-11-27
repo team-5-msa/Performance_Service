@@ -41,10 +41,10 @@ export class ReservationModel {
   })
   status: ReservationStatus;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   expiresAt: Date; // 만료 시간 (임시 예약의 경우 10분 후)
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   confirmedAt: Date; // 확정 시간
 
   @CreateDateColumn()
