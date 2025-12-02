@@ -7,6 +7,7 @@ import {
   Delete,
   Patch,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PerformancesService } from './performances.service';
@@ -19,9 +20,11 @@ import {
   ApiUpdatePerformance,
   ApiDeletePerformance,
 } from './decorators/swagger.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
 
 @ApiTags('performances')
 @Controller('performances')
+@UseGuards(AuthGuard)
 export class PerformancesController {
   constructor(private readonly performancesService: PerformancesService) {}
 

@@ -5,6 +5,7 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ReservationsService } from './reservations.service';
@@ -14,14 +15,17 @@ import {
   ApiCancelReservation,
   ApiRefundReservation,
 } from './decorators/swagger.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { GetReservationParams } from '../common/decorators';
+import { ReservationParamsDto } from './dto/reservation-params.dto';
 
 @ApiTags('reservations')
-@Controller('performances/:performanceId/reservations')
+@Controller('reservations')
+@UseGuards(AuthGuard)
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
-  // 좌석 임시 예약 → 좌석 임시 차감
-  @Post()
+  @Post(':performanceId')
   @ApiCreateReservation()
   postReservation(
     @Param('performanceId', ParseIntPipe) performanceId: number,
@@ -30,12 +34,11 @@ export class ReservationsController {
     return this.reservationsService.reservation(performanceId, seatCount);
   }
 
-  // 예약 확정
-  @Patch(':reservationId/confirm')
+  @Patch(':performanceId/:reservationId/confirm')
   @ApiConfirmReservation()
   patchConfirmReservation(
-    @Param('performanceId', ParseIntPipe) performanceId: number,
-    @Param('reservationId', ParseIntPipe) reservationId: number,
+    @GetReservationParams()
+    { performanceId, reservationId }: ReservationParamsDto,
   ) {
     return this.reservationsService.confirmReservation(
       performanceId,
@@ -43,12 +46,11 @@ export class ReservationsController {
     );
   }
 
-  // 예약 취소 (결제 전 취소)
-  @Patch(':reservationId/cancel')
+  @Patch(':performanceId/:reservationId/cancel')
   @ApiCancelReservation()
   patchCancelReservation(
-    @Param('performanceId', ParseIntPipe) performanceId: number,
-    @Param('reservationId', ParseIntPipe) reservationId: number,
+    @GetReservationParams()
+    { performanceId, reservationId }: ReservationParamsDto,
   ) {
     return this.reservationsService.cancelReservation(
       performanceId,
@@ -56,12 +58,11 @@ export class ReservationsController {
     );
   }
 
-  // 환불 (결제 후 취소)
-  @Patch(':reservationId/refund')
+  @Patch(':performanceId/:reservationId/refund')
   @ApiRefundReservation()
   patchRefundReservation(
-    @Param('performanceId', ParseIntPipe) performanceId: number,
-    @Param('reservationId', ParseIntPipe) reservationId: number,
+    @GetReservationParams()
+    { performanceId, reservationId }: ReservationParamsDto,
   ) {
     return this.reservationsService.refundReservation(
       performanceId,
