@@ -1,19 +1,17 @@
-import { Version } from '@nestjs/common';
 import {
   Entity,
   Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  VersionColumn,
 } from 'typeorm';
 
 export enum CATEGORY {
-  THEATER = 'THEATER', // 연극
-  MUSICAL = 'MUSICAL', // 뮤지컬
-  CONCERT = 'CONCERT', // 콘서트
-  EXHIBITION = 'EXHIBITION', // 전시
-  MOVIE = 'MOVIE', // 영화
+  THEATER = 'THEATER',
+  MUSICAL = 'MUSICAL',
+  CONCERT = 'CONCERT',
+  EXHIBITION = 'EXHIBITION',
+  MOVIE = 'MOVIE',
 }
 
 @Entity('performances')
@@ -53,7 +51,4 @@ export class PerformanceModel {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  // @VersionColumn() // TypeORM에서 낙관적 락(Optimistic Lock)을 구현하기 위한 데코레이터
-  // version: number; // Optimistic Lock을 위한 version 컬럼
 }

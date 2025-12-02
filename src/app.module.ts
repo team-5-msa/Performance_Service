@@ -3,14 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { PerformancesModule } from './performances/performances.module';
 import { PerformanceModel } from './performances/entities/performances.entity';
-import { ReservationModel } from './performances/entities/reservation.entity';
+import { ReservationModel } from './reservations/entities/reservation.entity';
+import { PerformancesModule } from './performances/performances.module';
+import { ReservationsModule } from './reservations/reservations.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    PerformancesModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -25,6 +25,8 @@ import { ReservationModel } from './performances/entities/reservation.entity';
       },
       logging: true,
     }),
+    PerformancesModule,
+    ReservationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

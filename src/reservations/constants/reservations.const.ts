@@ -1,0 +1,2 @@
+export const RESERVATION_EXPIRY_MINUTES = 10;
+export const MAX_SEATS_PER_RESERVATION = 10;

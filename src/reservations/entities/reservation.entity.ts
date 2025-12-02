@@ -7,13 +7,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PerformanceModel } from './performances.entity';
+import { PerformanceModel } from '../../performances/entities/performances.entity';
 
 export enum ReservationStatus {
-  PENDING = 'PENDING', // 임시 예약
-  CONFIRMED = 'CONFIRMED', // 예약 확정
-  CANCELLED = 'CANCELLED', // 취소됨
-  EXPIRED = 'EXPIRED', // 만료됨
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
+  EXPIRED = 'EXPIRED',
 }
 
 @Entity('reservations')
@@ -29,10 +29,10 @@ export class ReservationModel {
   performance: PerformanceModel;
 
   @Column({ nullable: true })
-  userId?: number; // 예약한 사용자 ID (인증 구현 후 변경 가능)
+  userId?: number;
 
   @Column()
-  seatCount: number; // 예약 좌석 수
+  seatCount: number;
 
   @Column({
     type: 'enum',
@@ -42,10 +42,10 @@ export class ReservationModel {
   status: ReservationStatus;
 
   @Column({ type: 'timestamptz', nullable: true })
-  expiresAt: Date; // 만료 시간 (임시 예약의 경우 10분 후)
+  expiresAt: Date;
 
   @Column({ type: 'timestamptz', nullable: true })
-  confirmedAt: Date; // 확정 시간
+  confirmedAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
