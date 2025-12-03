@@ -15,13 +15,13 @@ import {
   ApiCancelReservation,
   ApiRefundReservation,
 } from './decorators/swagger.decorator';
-import { AuthGuard } from '../common/guards/auth.guard';
+import { UserGuard } from '../common/guards/user.guard';
 import { GetReservationParams } from '../common/decorators';
 import { ReservationParamsDto } from './dto/reservation-params.dto';
 
 @ApiTags('reservations')
 @Controller('reservations')
-@UseGuards(AuthGuard)
+@UseGuards(UserGuard)
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 

@@ -20,31 +20,31 @@ export class PerformanceModel {
   id: number;
 
   @Column({ length: 255 })
-  title: string; // 공연 제목
+  title: string;
 
   @Column({ type: 'text' })
-  description: string; // 공연 설명
+  description: string;
 
   @Column({ type: 'enum', enum: Object.values(CATEGORY) })
-  category: CATEGORY; // 공연 카테고리(연극, 뮤지컬, 콘서트, 전시, 영화 등)
+  category: CATEGORY;
 
   @Column()
-  venue: string; // 공연 장소
+  venue: string;
 
   @Column({ nullable: true })
-  imageUrl?: string; // 포스터 이미지 URL
+  imageUrl?: string;
 
   @Column()
-  price: number; // 티켓 가격
+  price: number;
 
   @Column({ default: 0, nullable: false })
-  totalSeats: number; // 전체 좌석 수
+  totalSeats: number;
 
   @Column({ default: 0, nullable: false })
-  availableSeats: number; // 현재 예약 가능한 좌석 수
+  availableSeats: number;
 
   @Column({ default: 0, nullable: false })
-  reservedSeats?: number; // CONFIRMED 상태의 총 예약 수
+  reservedSeats?: number;
 
   @CreateDateColumn()
   createdAt: Date;
