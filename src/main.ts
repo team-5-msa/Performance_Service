@@ -18,6 +18,7 @@ async function bootstrap() {
         '- 예약 확정/취소/환불',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('performances', '공연 관리 API')
     .addTag('reservations', '예약 관리 API')
     .build();
