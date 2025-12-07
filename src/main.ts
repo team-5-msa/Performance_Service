@@ -18,7 +18,7 @@ async function bootstrap() {
         '- 좌석 임시 예약\n' +
         '- 예약 확정/취소/환불',
     )
-    .setVersion('1.0')
+    .setVersion('1.1')
     .addBearerAuth()
     .addTag('performances', '공연 관리 API')
     .addTag('reservations', '예약 관리 API')
