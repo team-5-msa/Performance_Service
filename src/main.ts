@@ -2,14 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { join } from 'path';
-import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe());
-  app.use(express.static(join(__dirname, '..', 'public')));
 
   const config = new DocumentBuilder()
     .setTitle('Performance Service API')
@@ -20,7 +17,7 @@ async function bootstrap() {
         '- 좌석 임시 예약\n' +
         '- 예약 확정/취소/환불',
     )
-    .setVersion('1.1')
+    .setVersion('1.0')
     .addBearerAuth()
     .addTag('performances', '공연 관리 API')
     .addTag('reservations', '예약 관리 API')
