@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "public": true,
+  "cleanUrls": false,
+  "rewrites": [
+    {
+      "source": "/swagger-ui.html",
+      "destination": "/public/swagger-ui.html"
+    },
+    {
+      "source": "/swagger.json",
+      "destination": "/public/swagger.json"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/[...all]"
+    }
+  ]
+}
