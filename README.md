@@ -316,3 +316,93 @@ PerformanceService/
 ---
 
 ## 배포
+
+### Vercel 자동 배포
+
+이 프로젝트는 `main` 브랜치에 푸시할 때 자동으로 Vercel에 배포됩니다.
+
+#### 🔧 초기 설정
+
+자동 배포를 활성화하려면 다음 단계를 따르세요:
+
+##### 1. Vercel 프로젝트 생성 및 토큰 발급
+
+1. [Vercel](https://vercel.com)에 로그인
+2. 프로젝트를 생성하거나 기존 프로젝트 선택
+3. 계정 설정에서 토큰 생성:
+   - Account Settings > Tokens > Create Token
+   - 토큰 이름 입력 후 생성
+   - 생성된 토큰을 안전한 곳에 복사
+
+##### 2. Vercel 프로젝트 정보 확인
+
+프로젝트 설정에서 필요한 정보를 확인:
+
+```bash
+# Vercel CLI 설치 (로컬에서)
+npm i -g vercel
+
+# 프로젝트 링크
+vercel link
+
+# .vercel/project.json 파일에서 정보 확인
+cat .vercel/project.json
+```
+
+필요한 정보:
+- **orgId**: 조직 ID
+- **projectId**: 프로젝트 ID
+
+##### 3. GitHub Secrets 설정
+
+GitHub 저장소 설정에서 다음 Secrets를 추가:
+
+1. 저장소의 **Settings** > **Secrets and variables** > **Actions** 이동
+2. **New repository secret** 클릭하여 아래 3개의 시크릿 추가:
+
+| Secret 이름         | 설명              | 예시                                      |
+| ------------------- | ----------------- | ----------------------------------------- |
+| `VERCEL_TOKEN`      | Vercel 액세스 토큰 | `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`        |
+| `VERCEL_ORG_ID`     | Vercel 조직 ID    | `team_xxxxxxxxxxxxxxxxxxxxxxxx`           |
+| `VERCEL_PROJECT_ID` | Vercel 프로젝트 ID | `prj_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`    |
+
+##### 4. 배포 확인
+
+`main` 브랜치에 푸시하면 자동으로 배포가 시작됩니다:
+
+```bash
+git push origin main
+```
+
+배포 상태는 다음에서 확인할 수 있습니다:
+- GitHub Actions 탭: 워크플로우 실행 상태
+- Vercel 대시보드: 배포 로그 및 상태
+
+#### 🚀 수동 배포
+
+자동 배포 외에도 Vercel CLI를 사용하여 수동으로 배포할 수 있습니다:
+
+```bash
+# 프로덕션 배포
+vercel --prod
+
+# 프리뷰 배포
+vercel
+```
+
+#### 📝 환경 변수 설정
+
+Vercel 대시보드에서 환경 변수를 설정:
+
+1. Vercel 프로젝트 선택
+2. **Settings** > **Environment Variables**
+3. `.env` 파일의 모든 환경 변수 추가:
+   - `DB_HOST`
+   - `DB_PORT`
+   - `DB_USERNAME`
+   - `DB_PASSWORD`
+   - `DB_DATABASE`
+   - `PORT`
+   - `NODE_ENV`
+
+> ⚠️ **주의**: 민감한 정보(DB 비밀번호 등)는 반드시 환경 변수로 설정하고, 코드에 직접 포함하지 마세요.
