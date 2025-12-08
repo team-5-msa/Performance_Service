@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,9 +29,9 @@ export class ReservationsService {
     private readonly reservationRepository: Repository<ReservationModel>,
     private readonly dataSource: DataSource,
   ) {}
-  async reservation(performanceId: number, seatCount: number) {
+  async reservation(userId: string, performanceId: number, seatCount: number) {
     this.logger.log(
-      `공연 ${performanceId}에 대한 ${seatCount}개 좌석 예약 요청`,
+      `사용자 ${userId}가 공연 ${performanceId}에 대한 ${seatCount}개 좌석 예약 요청`,
     );
     if (!seatCount || seatCount <= 0) {
       throw new BadRequestException('예약 좌석 수는 1 이상이어야 합니다.');
@@ -72,6 +73,7 @@ export class ReservationsService {
       );
 
       const reservation = manager.create(ReservationModel, {
+        userId,
         performanceId,
         seatCount,
         status: ReservationStatus.PENDING,
@@ -95,19 +97,38 @@ export class ReservationsService {
     });
   }
 
-  async confirmReservation(performanceId: number, reservationId: number) {
-    this.logger.log(`공연 ${performanceId}의 예약 ${reservationId} 확정`);
+  async confirmReservation(
+    userId: string,
+    performanceId: number,
+    reservationId: number,
+  ) {
+    this.logger.log(
+      `사용자 ${userId}가 공연 ${performanceId}의 예약 ${reservationId} 확정 요청`,
+    );
 
     return await this.dataSource.transaction(async (manager) => {
       // Pessimistic Lock으로 동시 업데이트 방지
       const reservation = await manager.findOne(ReservationModel, {
         where: { id: reservationId, performanceId },
-        relations: ['performance'],
         lock: { mode: 'pessimistic_write' },
       });
 
       if (!reservation) {
         throw new NotFoundException('예약 정보를 찾을 수 없습니다.');
+      }
+
+      // 사용자 권한 확인
+      if (reservation.userId !== userId) {
+        throw new ForbiddenException('자신의 예약만 확정할 수 있습니다.');
+      }
+
+      // 성능 정보 조회 (별도 쿼리)
+      const performance = await manager.findOne(PerformanceModel, {
+        where: { id: performanceId },
+      });
+
+      if (!performance) {
+        throw new NotFoundException('공연 정보를 찾을 수 없습니다.');
       }
 
       // 상태 확인 (lock 후 재확인)
@@ -144,17 +165,23 @@ export class ReservationsService {
       return {
         reservationId: reservation.id,
         performanceId: reservation.performanceId,
-        title: reservation.performance.title,
-        price: reservation.performance.price,
-        availableSeats: reservation.performance.availableSeats,
+        title: performance.title,
+        price: performance.price,
+        availableSeats: performance.availableSeats,
         status: reservation.status,
         message: '예약이 확정되었습니다.',
       };
     });
   }
 
-  async cancelReservation(performanceId: number, reservationId: number) {
-    this.logger.log(`공연 ${performanceId}의 예약 ${reservationId} 취소`);
+  async cancelReservation(
+    userId: string,
+    performanceId: number,
+    reservationId: number,
+  ) {
+    this.logger.log(
+      `사용자 ${userId}가 공연 ${performanceId}의 예약 ${reservationId} 취소 요청`,
+    );
     return await this.dataSource.transaction(async (manager) => {
       const reservation = await manager.findOne(ReservationModel, {
         where: { id: reservationId, performanceId },
@@ -163,6 +190,11 @@ export class ReservationsService {
 
       if (!reservation) {
         throw new NotFoundException('예약 정보를 찾을 수 없습니다.');
+      }
+
+      // 사용자 권한 확인
+      if (reservation.userId !== userId) {
+        throw new ForbiddenException('자신의 예약만 취소할 수 있습니다.');
       }
 
       if (reservation.status === ReservationStatus.CONFIRMED) {
@@ -178,9 +210,9 @@ export class ReservationsService {
         throw new BadRequestException('이미 취소되었거나 만료된 예약입니다.');
       }
 
+      // 공연 정보 조회 (별도 쿼리, lock 없음)
       const performance = await manager.findOne(PerformanceModel, {
         where: { id: performanceId },
-        lock: { mode: 'pessimistic_write' },
       });
 
       if (!performance) {
@@ -205,8 +237,14 @@ export class ReservationsService {
     });
   }
 
-  async refundReservation(performanceId: number, reservationId: number) {
-    this.logger.log(`공연 ${performanceId}의 예약 ${reservationId} 환불`);
+  async refundReservation(
+    userId: string,
+    performanceId: number,
+    reservationId: number,
+  ) {
+    this.logger.log(
+      `사용자 ${userId}가 공연 ${performanceId}의 예약 ${reservationId} 환불 요청`,
+    );
     return await this.dataSource.transaction(async (manager) => {
       const reservation = await manager.findOne(ReservationModel, {
         where: { id: reservationId, performanceId },
@@ -217,13 +255,18 @@ export class ReservationsService {
         throw new NotFoundException('예약 정보를 찾을 수 없습니다.');
       }
 
+      // 사용자 권한 확인
+      if (reservation.userId !== userId) {
+        throw new ForbiddenException('자신의 예약만 환불할 수 있습니다.');
+      }
+
       if (reservation.status !== ReservationStatus.CONFIRMED) {
         throw new BadRequestException('확정된 예약만 환불 가능합니다.');
       }
 
+      // 공연 정보 조회 (별도 쿼리, lock 없음)
       const performance = await manager.findOne(PerformanceModel, {
         where: { id: performanceId },
-        lock: { mode: 'pessimistic_write' },
       });
 
       if (!performance) {

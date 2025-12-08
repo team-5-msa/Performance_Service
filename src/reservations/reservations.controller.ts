@@ -8,7 +8,7 @@ import {
   ApiRefundReservation,
 } from './decorators/swagger.decorator';
 import { UserGuard } from '../common/guards/user.guard';
-import { GetReservationParams } from '../common/decorators';
+import { GetReservationParams, GetUserId } from '../common/decorators';
 import { ReservationParamsDto } from './dto/reservation-params.dto';
 
 @ApiTags('reservations')
@@ -20,20 +20,27 @@ export class ReservationsController {
   @Post(':performanceId')
   @ApiCreateReservation()
   postReservation(
+    @GetUserId() userId: string,
     @GetReservationParams()
     { performanceId }: ReservationParamsDto,
     @Body('seatCount') seatCount: number,
   ) {
-    return this.reservationsService.reservation(performanceId, seatCount);
+    return this.reservationsService.reservation(
+      userId,
+      performanceId,
+      seatCount,
+    );
   }
 
   @Patch(':performanceId/:reservationId/confirm')
   @ApiConfirmReservation()
   patchConfirmReservation(
+    @GetUserId() userId: string,
     @GetReservationParams()
     { performanceId, reservationId }: ReservationParamsDto,
   ) {
     return this.reservationsService.confirmReservation(
+      userId,
       performanceId,
       reservationId,
     );
@@ -42,10 +49,12 @@ export class ReservationsController {
   @Patch(':performanceId/:reservationId/cancel')
   @ApiCancelReservation()
   patchCancelReservation(
+    @GetUserId() userId: string,
     @GetReservationParams()
     { performanceId, reservationId }: ReservationParamsDto,
   ) {
     return this.reservationsService.cancelReservation(
+      userId,
       performanceId,
       reservationId,
     );
@@ -54,10 +63,12 @@ export class ReservationsController {
   @Patch(':performanceId/:reservationId/refund')
   @ApiRefundReservation()
   patchRefundReservation(
+    @GetUserId() userId: string,
     @GetReservationParams()
     { performanceId, reservationId }: ReservationParamsDto,
   ) {
     return this.reservationsService.refundReservation(
+      userId,
       performanceId,
       reservationId,
     );

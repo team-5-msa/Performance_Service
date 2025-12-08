@@ -28,8 +28,8 @@ export class ReservationModel {
   @JoinColumn({ name: 'performanceId' })
   performance: PerformanceModel;
 
-  @Column({ nullable: true })
-  userId?: number;
+  @Column({ type: 'varchar' })
+  userId: string;
 
   @Column()
   seatCount: number;
