@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Patch,
-  Param,
-  Body,
-  ParseIntPipe,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Patch, Body, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ReservationsService } from './reservations.service';
 import {
@@ -28,7 +20,8 @@ export class ReservationsController {
   @Post(':performanceId')
   @ApiCreateReservation()
   postReservation(
-    @Param('performanceId', ParseIntPipe) performanceId: number,
+    @GetReservationParams()
+    { performanceId }: ReservationParamsDto,
     @Body('seatCount') seatCount: number,
   ) {
     return this.reservationsService.reservation(performanceId, seatCount);

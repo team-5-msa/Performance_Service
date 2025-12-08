@@ -43,9 +43,6 @@ export class PerformanceModel {
   @Column({ default: 0, nullable: false })
   availableSeats: number;
 
-  @Column({ default: 0, nullable: false })
-  reservedSeats?: number;
-
   @CreateDateColumn()
   createdAt: Date;
 
