@@ -13,12 +13,8 @@ export class UserGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader) {
-      throw new UnauthorizedException('Authorization header is missing');
+      throw new UnauthorizedException('인증 토큰이 존재하지 않습니다.');
     }
-
-    // if (!authHeader.startsWith('Bearer ')) {
-    //   throw new UnauthorizedException('Invalid authorization header format');
-    // }
 
     return true;
   }
